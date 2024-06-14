@@ -7,7 +7,6 @@ class User {
     public $auth = false;
 
     public function __construct() {
-        $this->db = db_connect();
     }
 
     public function test () {
@@ -19,6 +18,7 @@ class User {
     }
 
   public function getUserByUsername($username){
+     $db = db_connect();
     $statement = $db->prepare("SELECT * FROM users WHERE username = :name;");
      $statement->bindValue(':name', $username);
     $statement->execute();
@@ -27,7 +27,8 @@ class User {
   }
 
    public function logAttempt($username, $status){
-      $statement = $db->prepare("INSERT INTO log (username, attempt, attempt_time) VALUES (:username, :attempt, NOW())");
+      $db = db_connect();
+     $statement = $db->prepare("INSERT INTO log (username, attempt, attempt_time) VALUES (:username, :attempt, NOW())");
      $statement->bindValue(':username', $username);
      $statement->bindValue(':attempt', $status);
      $statement->execute();
@@ -37,7 +38,8 @@ class User {
 
     public function authenticate($username, $password) {
        $username = strtolower($username);
-       $lockoutTime = 60; 
+       $db = db_connect();
+      $lockoutTime = 60; 
        $maxAttempts = 3; 
       $statement = $db->prepare("SELECT attempt, attempt_time FROM log WHERE username = :name ORDER BY attempt_time DESC LIMIT :maxAttempts");
       $statement->bindValue(':name', $username);
@@ -50,7 +52,7 @@ class User {
       });
 
       if (count($recentFailedAttempts) >= $maxAttempts){
-        echo "Your account is locked. Please try again later.";
+        echo "Your account is locked. Please try again later. <a href='/login'>Go to Login</a>";
         header('Location: /login');
         exit();
       }
@@ -78,7 +80,7 @@ class User {
         else{
            $_SESSION['failedAuth'] = 1;
         }
-        echo "Invalid username or password.";
+        echo "Invalid username or password. <a href='/login'>Go to Login</a>";
         header('Location: /login');
         exit();
         
