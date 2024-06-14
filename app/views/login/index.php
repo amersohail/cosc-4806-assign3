@@ -4,13 +4,13 @@
 			<div class="page-header" id="banner">
 					<div class="row">
 							<div class="col-lg-12">
-									<h1>You are not logged in</h1>
+								<h1>You are not logged in</h1>
 							</div>
 					</div>
 			</div>
 
 	<div class="row">
-			<div class="col-sm-auto">
+			<div class="col-4">
 			<form action="/login/verify" method="post" >
 			<fieldset>
 				<div class="form-group">
@@ -25,7 +25,7 @@
 					<button type="submit" class="btn btn-primary">Login</button>
 			</fieldset>
 			</form> 
-				 <p><a href="create/index">Cick here to register for new account</a></p>
+			<p class="mt-2"><a href="create/index">Cick here to register for new account</a></p>
 		</div>
 	</div>
 

@@ -1,10 +1,25 @@
+<?php
+// Start the session
+session_start();
+?>
+
 <?php require_once 'app/views/templates/header.php' ?>
 <div class="container">
     <div class="page-header" id="banner">
-        <div class="row">
+        <div class="row mt-4">
             <div class="col-lg-12">
-                <h1>Welcome </h1>
+                <h1>Welcome
+                <?php
+                // Check if the username session variable is set
+                if (isset($_SESSION['username'])) {
+                    // Display the username
+                    echo " " . htmlspecialchars($_SESSION['username']) . "!";
+                } else {
+                    echo "Guest!";
+                }?>
+                </h1>
                 <p class="lead"> <?= date("F jS, Y"); ?></p>
+                
             </div>
         </div>
     </div>
