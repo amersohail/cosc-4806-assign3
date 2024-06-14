@@ -37,15 +37,16 @@ class User {
    }
 
     public function authenticate($username, $password) {
-       $username = strtolower($username);
-       $db = db_connect();
-      $lockoutTime = 60; 
-       $maxAttempts = 3; 
+      $username = strtolower($username);
+      $db = db_connect();
+      $lockoutTime = 60;
+      $maxAttempts = 3;
+
       $statement = $db->prepare("SELECT attempt, attempt_time FROM log WHERE username = :name ORDER BY attempt_time DESC LIMIT :maxAttempts");
       $statement->bindValue(':name', $username);
-       $statement->bindValue(':maxAttempts', $maxAttempts, PDO::PARAM_INT);
-       $statement->execute();
-       $attempts = $statement->fetchAll(PDO::FETCH_ASSOC);
+      $statement->bindValue(':maxAttempts', $maxAttempts, PDO::PARAM_INT);
+      $statement->execute();
+      $attempts = $statement->fetchAll(PDO::FETCH_ASSOC);
 
       $recentFailedAttempts = array_filter($attempts, function ($attempt) use ($lockoutTime) {
           return $attempt['attempt'] == 'bad' && (time() - strtotime($attempt['attempt_time']) < $lockoutTime);
@@ -53,20 +54,17 @@ class User {
 
       if (count($recentFailedAttempts) >= $maxAttempts){
         echo "Your account is locked. Please try again later. <a href='/login'>Go to Login</a>";
-        header('Location: /login');
         exit();
       }
 
-      $statement = $db->prepare("SELECT * FROM users WHERE username = :name;");
-      $statement->bindValue(':name', $username);
-      $statement->execute();
-      $rows = $statement->fetch(PDO::FETCH_ASSOC);
-      
-      
-      if ($rows && password_verify($password, $rows['password'])){
+       $statement = $db->prepare("SELECT * FROM users WHERE username = :name;");
+       $statement->bindValue(':name', $username);
+       $statement->execute();
+       $user = $statement->fetch(PDO::FETCH_ASSOC);
+
+      if ($user && password_verify($password, $user['password'])){
         $_SESSION['auth'] = 1;
         $_SESSION['username'] = ucwords($username);
-        unset($_SESSION['failedAuth']);
         $this->logAttempt($username, 'good');
         header('Location: /home');
         exit();
@@ -74,17 +72,12 @@ class User {
       }
       else{
         $this->logAttempt($username, 'bad');
-        if (isset($_SESSION['failedAuth'])) {
-          $_SESSION['failedAuth']++;
-        }
-        else{
-           $_SESSION['failedAuth'] = 1;
-        }
         echo "Invalid username or password. <a href='/login'>Go to Login</a>";
-        header('Location: /login');
         exit();
         
       }
+
+                                
       
       
     }

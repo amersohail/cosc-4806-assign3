@@ -11,15 +11,13 @@ class Registration{
      $stmt->execute();
      $result = $stmt->fetch(PDO::FETCH_ASSOC);
      if ($result){
-       $_SESSION['info_message'] = "Username already exists. Please choose another one.";
-       header("Location: /info");
-       exit;
+       echo "Username already exists. Please choose another one. <a href='/create'>Go back to Registration</a>";
+       return;
      }
 
     if ($password !== $confirm_password){
-      $_SESSION['info_message'] = "Passwords do not match.";
-      header("Location: /info");
-      exit;
+      echo "Passwords do not match. <a href='/create'>Go back to Registration</a>";
+      return;
     }
 
     if (!preg_match("/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/", $password)){
@@ -43,3 +41,4 @@ class Registration{
 
   }
 }
+?>
