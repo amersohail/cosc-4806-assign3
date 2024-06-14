@@ -15,3 +15,4 @@ if (isset($_SESSION['auth']) == 1) {
     <meta name="mobile-web-app-capable" content="yes">
 </head>
 <body>
+<div class="container">
